@@ -4,7 +4,7 @@ export class MensagemView extends View {
     template (model) {
         return model ?
         `
-            <p class="alert alert-info">${model}</p>
+            <p class="alert alert-info">${model.obterTexto()}</p>
         ` 
         : `<p></p>`
     }

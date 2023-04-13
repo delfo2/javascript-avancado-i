@@ -11,7 +11,9 @@ export class Controler {
         this._inputQuantidade = quantidade;
         this._inputValor = valor;
 
-        this._memory = new NegociacoesMemory();
+        this._memory = new NegociacoesMemory(model =>
+            this._view.update(model)
+        );
         this._view = new NegociacoesView(document.querySelector("#negociacoesView"));
 
         this._mensagemInfo = new MensagemInfo();
@@ -20,12 +22,20 @@ export class Controler {
 
     adicionaNegociacao () {
         this._memory.adiciona(this._criaNegociacao());
-        this._view.update(this._memory);
         
         this._mensagemInfo.updateTexto('Negociação criada com sucesso');
-        this._mensagemAlerta.update(this._mensagemInfo.obterTexto());
+        this._mensagemAlerta.update(this._mensagemInfo);
 
         this._limpaCampos();
+    }
+    
+    deleteAll () {
+        this._memory.deleta();
+        this._limpaCampos();
+
+        this._mensagemInfo.updateTexto('Negociações apagadas com sucesso');
+        this._mensagemAlerta.update(this._mensagemInfo);
+
     }
 
     _criaNegociacao () {

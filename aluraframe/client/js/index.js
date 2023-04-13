@@ -6,8 +6,9 @@ const controler = new Controler(
     document.querySelector('#valor')
 )
 
-
-// const tabua = document.querySelector('[data-tabela=""]');
+document.querySelector('[data-botao="delete"]').addEventListener('click', () => {
+    controler.deleteAll();
+})
 
 document.querySelector('[data-form=""]').addEventListener('submit', (e) => {
     e.preventDefault();
