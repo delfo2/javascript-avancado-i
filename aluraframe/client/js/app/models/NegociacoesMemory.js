@@ -1,13 +1,11 @@
 export class NegociacoesMemory {
 
-    constructor(fn) {
+    constructor() {
         this._negociacoes = [];
-        this._armadilha = fn;
     }
 
     adiciona(negociacao) {
         this._negociacoes.push(negociacao);
-        this._armadilha(this);
     }
     
     get negociacoes() {
@@ -17,6 +15,5 @@ export class NegociacoesMemory {
 
     deleta () {
         this._negociacoes = [];
-        this._armadilha(this)
     }
 }

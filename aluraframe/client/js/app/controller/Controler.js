@@ -11,9 +11,20 @@ export class Controler {
         this._inputQuantidade = quantidade;
         this._inputValor = valor;
 
-        this._memory = new NegociacoesMemory(model =>
-            this._view.update(model)
-        );
+        let self = this;
+        this._memory = new Proxy(new NegociacoesMemory(), {
+            get(target, prop, receiver) { 
+                if(['adiciona','deleta'].includes(prop) 
+                    && typeof(target[prop]) === typeof(Function)) {
+                        return function () {
+                            console.log(`inteceptando ${prop}`);
+                            Reflect.apply(target[prop], target, arguments);
+                            self._view.update(target);
+                        }
+                    }
+                    return Reflect.get(target[prop], prop, receiver);
+            }
+        })
         this._view = new NegociacoesView(document.querySelector("#negociacoesView"));
 
         this._mensagemInfo = new MensagemInfo();
