@@ -4,38 +4,34 @@ import { NegociacoesMemory } from "../models/NegociacoesMemory.js";
 import { NegociacoesView } from "../view/NegociaçõesView.js";
 import { MensagemInfo } from "../models/MensageInfo.js";
 import { MensagemView } from "../view/MensagemView.js";
+import { ProxyFactory } from "../services/ProxyFactory.js";
+import { FetchNotes } from "../services/FetchNotes.js";
 
 export class Controler {
     constructor (data, quantidade, valor) {
         this._inputData =  data;
         this._inputQuantidade = quantidade;
         this._inputValor = valor;
-
         let self = this;
-        this._memory = new Proxy(new NegociacoesMemory(), {
-            get(target, prop, receiver) { 
-                if(['adiciona','deleta'].includes(prop) 
-                    && typeof(target[prop]) === typeof(Function)) {
-                        return function () {
-                            console.log(`inteceptando ${prop}`);
-                            Reflect.apply(target[prop], target, arguments);
-                            self._view.update(target);
-                        }
-                    }
-                    return Reflect.get(target[prop], prop, receiver);
-            }
-        })
-        this._view = new NegociacoesView(document.querySelector("#negociacoesView"));
 
-        this._mensagemInfo = new MensagemInfo();
-        this._mensagemAlerta = new MensagemView(document.querySelector("#mensagemView"));
+        this._memory = ProxyFactory.criar(
+            new NegociacoesMemory(),
+            new NegociacoesView(document.querySelector("#negociacoesView")),
+            'adiciona',
+            'deleta',
+            'ordena'
+        )
+
+        this._mensagemInfo = ProxyFactory.criar(
+            new MensagemInfo(),
+            new MensagemView(document.querySelector("#mensagemView")),
+            'updateTexto'
+        )
     }
 
     adicionaNegociacao () {
         this._memory.adiciona(this._criaNegociacao());
-        
         this._mensagemInfo.updateTexto('Negociação criada com sucesso');
-        this._mensagemAlerta.update(this._mensagemInfo);
 
         this._limpaCampos();
     }
@@ -45,8 +41,23 @@ export class Controler {
         this._limpaCampos();
 
         this._mensagemInfo.updateTexto('Negociações apagadas com sucesso');
-        this._mensagemAlerta.update(this._mensagemInfo);
+    }
 
+    async import () {
+        const notes = new FetchNotes();
+        const negociações = await notes.buscaNotas();
+        negociações.forEach(objeto => {
+            this._memory.adiciona(new Negociacao(
+                new Date(objeto.data),
+                objeto.quantidade,
+                objeto.valor
+            ));
+        })
+        this._mensagemInfo.updateTexto('Negociações importadas.')
+    }
+
+    ordena (coluna) {
+        self._memory.ordena((a, b) => a[coluna] - b[coluna])
     }
 
     _criaNegociacao () {

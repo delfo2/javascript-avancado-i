@@ -7,10 +7,10 @@ export class NegociacoesView extends View{
         <table class="table table-hover table-bordered">
             <thead>
                 <tr>
-                    <th>DATA</th>
-                    <th>QUANTIDADE</th>
-                    <th>VALOR</th>
-                    <th>VOLUME</th>
+                    <th data-valor="data">DATA</th>
+                    <th data-valor="quantidade">QUANTIDADE</th>
+                    <th data-valor="valor">VALOR</th>
+                    <th data-valor="volume">VOLUME</th>
                 </tr>
             </thead>
         

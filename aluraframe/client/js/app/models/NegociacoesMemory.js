@@ -16,4 +16,8 @@ export class NegociacoesMemory {
     deleta () {
         this._negociacoes = [];
     }
+    
+    ordena(criterio) {
+        this._negociacoes.sort(criterio);        
+    }
 }
