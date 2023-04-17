@@ -13,6 +13,7 @@ export class Controler {
         this._inputData =  data;
         this._inputQuantidade = quantidade;
         this._inputValor = valor;
+        this._ordem = 'decrescente';
 
         this._memory = ProxyFactory.criar(
             new NegociacoesMemory(),
@@ -59,16 +60,22 @@ export class Controler {
     }
 
     ordena (coluna) {
-        this._memory.ordena((a, b) => a[coluna] - b[coluna]);
+        if(this._ordem === 'crescente') {
+            this._memory.ordena((a, b) => b[coluna.dataset.valor] - a[coluna.dataset.valor])
+            this._ordem = 'decrecente';
+        } else {
+            this._memory.ordena((a, b) => a[coluna.dataset.valor] - b[coluna.dataset.valor]);
+            this._ordem = 'crescente';
+        }
         this.ouvir();
     }
-
+    
     ouvir () {
         let self = this;
         const colunas = document.querySelectorAll('[data-valor]');
         colunas.forEach(coluna =>
             coluna.addEventListener('click', () => {
-                self.ordena(coluna.dataset.valor);
+                self.ordena(coluna);
             })
         );
     }
