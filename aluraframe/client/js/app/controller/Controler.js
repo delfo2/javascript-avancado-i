@@ -6,13 +6,13 @@ import { MensagemInfo } from "../models/MensageInfo.js";
 import { MensagemView } from "../view/MensagemView.js";
 import { ProxyFactory } from "../services/ProxyFactory.js";
 import { FetchNotes } from "../services/FetchNotes.js";
+import { listen } from "../services/listener.js";
 
 export class Controler {
     constructor (data, quantidade, valor) {
         this._inputData =  data;
         this._inputQuantidade = quantidade;
         this._inputValor = valor;
-        let self = this;
 
         this._memory = ProxyFactory.criar(
             new NegociacoesMemory(),
@@ -34,6 +34,7 @@ export class Controler {
         this._mensagemInfo.updateTexto('Negociação criada com sucesso');
 
         this._limpaCampos();
+        this.ouvir();
     }
     
     deleteAll () {
@@ -54,10 +55,22 @@ export class Controler {
             ));
         })
         this._mensagemInfo.updateTexto('Negociações importadas.')
+        this.ouvir();
     }
 
     ordena (coluna) {
-        self._memory.ordena((a, b) => a[coluna] - b[coluna])
+        this._memory.ordena((a, b) => a[coluna] - b[coluna]);
+        this.ouvir();
+    }
+
+    ouvir () {
+        let self = this;
+        const colunas = document.querySelectorAll('[data-valor]');
+        colunas.forEach(coluna =>
+            coluna.addEventListener('click', () => {
+                self.ordena(coluna.dataset.valor);
+            })
+        );
     }
 
     _criaNegociacao () {
