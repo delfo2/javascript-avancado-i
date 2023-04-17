@@ -17,4 +17,19 @@ export class FetchNotes {
             throw new Error ('Não foi possível se conectar etc, etc.');
         }
     }
+    async enviarNota(nota) {
+        try {
+            const response = await fetch('http://localhost:3000/negociacoes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nota)
+            });
+            const resultado = await response.json();
+            return resultado;
+        } catch (error) {
+            throw new Error('Não foi possível enviar a nota, etc, etc.');
+        }
+    }
 }

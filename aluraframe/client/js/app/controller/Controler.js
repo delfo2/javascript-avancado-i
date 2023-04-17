@@ -14,6 +14,7 @@ export class Controler {
         this._inputQuantidade = quantidade;
         this._inputValor = valor;
         this._ordem = 'decrescente';
+        this._notes = new FetchNotes();
 
         this._memory = ProxyFactory.criar(
             new NegociacoesMemory(),
@@ -46,8 +47,7 @@ export class Controler {
     }
 
     async import () {
-        const notes = new FetchNotes();
-        const negociações = await notes.buscaNotas();
+        const negociações = await this._notes.buscaNotas();
         negociações.forEach(objeto => {
             this._memory.adiciona(new Negociacao(
                 new Date(objeto.data),
@@ -81,11 +81,14 @@ export class Controler {
     }
 
     _criaNegociacao () {
-        return new Negociacao(
+        const negociacaoTemp = new Negociacao(
             DataHelper.parseDate(this._inputData.value),
             this._inputQuantidade.value,
             this._inputValor.value
         );
+        this._notes.enviarNota(negociacaoTemp)
+            .then(console.log);
+        return negociacaoTemp;
     }
 
     _limpaCampos () {
